@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Mental Health</string>
+    <string name="action_settings">Settings</string>
+    <string name="RatingDescription">How are you feeling?</string>
+    <string name="PositiveDescription">List 3 positive aspects of your day!</string>
+    <string name="One">1.</string>
+    <string name="PositiveAspectHint">Positive Aspect</string>
+    <string name="Two">2.</string>
+    <string name="Three">3.</string>
+</resources>
