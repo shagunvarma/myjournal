@@ -53,8 +53,12 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void createNewJournalEntry() {
+    private void createNewJournalEntry() {
         Intent intent = new Intent(this, NewJournalEntry.class);
         startActivity(intent);
+    }
+
+    private void createCardView() {
+
     }
 }
