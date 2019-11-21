@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -12,8 +11,20 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RatingBar;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 
 public class MainActivity extends AppCompatActivity {
+
+    private String fileStorageNum = "userJournalStorage";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
                 createNewJournalEntry();
             }
         });
+        createCardView();
     }
 
     @Override
@@ -58,7 +70,49 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    //https://www.dev2qa.com/android-read-write-internal-storage-file-example/
     private void createCardView() {
-
+        try {
+            LinearLayout parent = findViewById(R.id.JournalEntriesDisplay);
+            parent.removeAllViews();
+            FileInputStream file = openFileInput(fileStorageNum);
+            InputStreamReader inputStreamReader = new InputStreamReader(file);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String line = "";
+            View chunk = null;
+            int count = -1;
+            while((line=bufferedReader.readLine()) != null) {
+                if (line.equals("StartJournalEntry/")) {
+                    chunk = getLayoutInflater().inflate(R.layout.chunk_mini_journal_entry, parent, false);
+                    count = 0;
+                } else if (count == 0) {
+                    TextView date = chunk.findViewById(R.id.DateField);
+                    date.setText(line);
+                    count++;
+                } else if (count == 1) {
+                    float stars = Float.parseFloat(line);
+                    RatingBar rate = chunk.findViewById(R.id.OldRating);
+                    rate.setRating(stars);
+                    count++;
+                } else if (count == 2) {
+                    TextView first = chunk.findViewById(R.id.FirstPos);
+                    first.setText(line);
+                    count++;
+                } else if (count == 3) {
+                    TextView second = chunk.findViewById(R.id.SecondPos);
+                    second.setText(line);
+                    count++;
+                } else if (count == 4) {
+                    TextView third = chunk.findViewById(R.id.ThirdPos);
+                    third.setText(line);
+                    count++;
+                } else if (line.equals("/EndJournalEntry")) {
+                    parent.addView(chunk);
+                    count = -1;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 }

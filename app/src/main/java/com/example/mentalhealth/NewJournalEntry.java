@@ -52,7 +52,7 @@ public class NewJournalEntry extends AppCompatActivity {
     private void writeToFile(final Float stars, final String first, final String second, final String third, final String extra) {
         try {
             FileOutputStream file = openFileOutput(fileStorageNum, Context.MODE_APPEND);
-            String start = "/StartJournalEntry/";
+            String start = "StartJournalEntry/";
             file.write(("\n" + start).getBytes());
             SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
             String date = format.format(new Date());
