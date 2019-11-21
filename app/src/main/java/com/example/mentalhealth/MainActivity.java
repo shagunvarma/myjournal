@@ -1,6 +1,7 @@
 package com.example.mentalhealth;
 
 import android.content.Intent;
+import android.icu.lang.UScript;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -21,10 +22,13 @@ import org.w3c.dom.Text;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private String fileStorageNum = "userJournalStorage";
+    private List<JournalEntry> journals = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
                 createNewJournalEntry();
             }
         });
-
+        readFileData();
         createCardView();
     }
 
@@ -72,55 +76,84 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //https://www.dev2qa.com/android-read-write-internal-storage-file-example/
-    private void createCardView() {
-        // Current issues:
-            //No spacing between chunks
-            //Loads oldest to newest, need to flip
-            //Add edit/view buttons to entries
-        int maxDisplay = 5;
-        int currentDispaly = 0;
+    private void readFileData() {
+        journals.clear();
         try {
-            LinearLayout parent = findViewById(R.id.JournalEntriesDisplay);
-            parent.removeAllViews();
             FileInputStream file = openFileInput(fileStorageNum);
             InputStreamReader inputStreamReader = new InputStreamReader(file);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String line = "";
-            View chunk = null;
+            String date = "";
+            float stars = (float) 0.0;
+            String firstPos = "";
+            String secondPos = "";
+            String thirdPos = "";
+            String extraInfo = "";
             int count = -1;
-            while((line=bufferedReader.readLine()) != null && currentDispaly <= maxDisplay) {
+            while((line=bufferedReader.readLine()) != null) {
                 if (line.equals("StartJournalEntry/")) {
-                    chunk = getLayoutInflater().inflate(R.layout.chunk_mini_journal_entry, parent, false);
+                    date = "";
+                    stars = (float) 0.0;
+                    firstPos = "";
+                    secondPos = "";
+                    thirdPos = "";
+                    extraInfo = "";
                     count = 0;
                 } else if (count == 0) {
-                    TextView date = chunk.findViewById(R.id.DateField);
-                    date.setText(line);
+                    date = line;
                     count++;
                 } else if (count == 1) {
-                    float stars = Float.parseFloat(line);
-                    RatingBar rate = chunk.findViewById(R.id.OldRating);
-                    rate.setRating(stars);
+                    stars = Float.parseFloat(line);
                     count++;
                 } else if (count == 2) {
-                    TextView first = chunk.findViewById(R.id.FirstPos);
-                    first.setText(line);
+                    firstPos = line;
                     count++;
                 } else if (count == 3) {
-                    TextView second = chunk.findViewById(R.id.SecondPos);
-                    second.setText(line);
+                    secondPos = line;
                     count++;
                 } else if (count == 4) {
-                    TextView third = chunk.findViewById(R.id.ThirdPos);
-                    third.setText(line);
+                    thirdPos = line;
                     count++;
+                } else if (line.equals("StartExtraInfo/")) {
+                    while ((line=bufferedReader.readLine()) != null && !line.equals("/EndExtraInfo")) {
+                        extraInfo = extraInfo + "\n" + line;
+                    }
                 } else if (line.equals("/EndJournalEntry")) {
-                    parent.addView(chunk);
+                    JournalEntry newJournal = new JournalEntry(date, stars, firstPos, secondPos, thirdPos, extraInfo);
+                    journals.add(newJournal);
                     count = -1;
-                    currentDispaly++;
                 }
             }
         } catch (Exception e) {
             System.out.println(e);
+        }
+    }
+
+    private void createCardView() {
+        // Current issues:
+            //No spacing between chunks
+            //Add edit/view buttons to entries
+        int maxDisplay = 5;
+        LinearLayout parent = findViewById(R.id.JournalEntriesDisplay);
+        parent.removeAllViews();
+        int greater = 0;
+        if ((journals.size() - maxDisplay) > 0) {
+            greater = journals.size() - maxDisplay;
+        }
+        for (int i = journals.size() - 1; i >= greater; i--) {
+            JournalEntry entry = journals.get(i);
+            View chunk = getLayoutInflater().inflate(R.layout.chunk_mini_journal_entry, parent, false);
+            TextView date = chunk.findViewById(R.id.DateField);
+            date.setText(entry.getDate());
+            RatingBar rate = chunk.findViewById(R.id.OldRating);
+            rate.setRating(entry.getStars());
+            TextView first = chunk.findViewById(R.id.FirstPos);
+            first.setText(entry.getFirstPos());
+            TextView second = chunk.findViewById(R.id.SecondPos);
+            second.setText(entry.getSecondPos());
+            TextView third = chunk.findViewById(R.id.ThirdPos);
+            third.setText(entry.getThirdPos());
+            parent.addView(chunk);
         }
     }
 }

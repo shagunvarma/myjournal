@@ -61,7 +61,7 @@ public class NewJournalEntry extends AppCompatActivity {
             file.write(("\n" + first).getBytes());
             file.write(("\n" + second).getBytes());
             file.write(("\n" + third).getBytes());
-            String extraStart = "\n/StartExtraInfo/";
+            String extraStart = "\nStartExtraInfo/";
             file.write(extraStart.getBytes());
             file.write(("\n" + extra).getBytes());
             String extraEnd = "\n/EndExtraInfo";
