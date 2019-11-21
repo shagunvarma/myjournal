@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         // Current issues:
             //No spacing between chunks
             //Loads oldest to newest, need to flip
-            //Add edit/view buttons to entrys
+            //Add edit/view buttons to entries
         int maxDisplay = 5;
         int currentDispaly = 0;
         try {
