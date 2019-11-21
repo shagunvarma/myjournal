@@ -18,14 +18,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="186dp"
-            android:text="TextView"
             android:textAlignment="center"
             android:textColor="@android:color/black"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="@+id/OldRating"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Date" />
 
         <RatingBar
             android:id="@+id/OldRating"
@@ -68,11 +68,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
-                    android:text="TextView"
                     android:textSize="24sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/CountNumber1"
-                    app:layout_constraintTop_toTopOf="@+id/CountNumber1" />
+                    app:layout_constraintTop_toTopOf="@+id/CountNumber1"
+                    tools:text="Positive Aspects" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -99,11 +99,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
-                    android:text="TextView"
                     android:textSize="24sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/CountNumber2"
-                    app:layout_constraintTop_toTopOf="@+id/CountNumber2" />
+                    app:layout_constraintTop_toTopOf="@+id/CountNumber2"
+                    tools:text="Positive Aspects" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -130,12 +130,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
-                    android:text="TextView"
                     android:textSize="24sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/CountNumber3"
-                    app:layout_constraintTop_toTopOf="@+id/CountNumber3" />
+                    app:layout_constraintTop_toTopOf="@+id/CountNumber3"
+                    tools:text="Positive Aspects" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.cardview.widget.CardView>

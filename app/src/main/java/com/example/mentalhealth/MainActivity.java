@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
                 createNewJournalEntry();
             }
         });
+
         createCardView();
     }
 
@@ -72,6 +73,12 @@ public class MainActivity extends AppCompatActivity {
 
     //https://www.dev2qa.com/android-read-write-internal-storage-file-example/
     private void createCardView() {
+        // Current issues:
+            //No spacing between chunks
+            //Loads oldest to newest, need to flip
+            //Add edit/view buttons to entrys
+        int maxDisplay = 5;
+        int currentDispaly = 0;
         try {
             LinearLayout parent = findViewById(R.id.JournalEntriesDisplay);
             parent.removeAllViews();
@@ -81,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             String line = "";
             View chunk = null;
             int count = -1;
-            while((line=bufferedReader.readLine()) != null) {
+            while((line=bufferedReader.readLine()) != null && currentDispaly <= maxDisplay) {
                 if (line.equals("StartJournalEntry/")) {
                     chunk = getLayoutInflater().inflate(R.layout.chunk_mini_journal_entry, parent, false);
                     count = 0;
@@ -109,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (line.equals("/EndJournalEntry")) {
                     parent.addView(chunk);
                     count = -1;
+                    currentDispaly++;
                 }
             }
         } catch (Exception e) {
