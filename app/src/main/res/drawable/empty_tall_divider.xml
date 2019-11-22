@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- https://stackoverflow.com/questions/4259467/how-to-make-space-between-linearlayout-children -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <size
+        android:height="10dp"
+        android:width="0dp"/>
+</shape>

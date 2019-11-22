@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         // Current issues:
             //No spacing between chunks
             //Add edit/view buttons to entries
-        int maxDisplay = 5;
+        int maxDisplay = 10;
         LinearLayout parent = findViewById(R.id.JournalEntriesDisplay);
         parent.removeAllViews();
         int greater = 0;
