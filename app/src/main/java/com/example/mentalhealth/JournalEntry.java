@@ -1,6 +1,9 @@
 package com.example.mentalhealth;
 
-public class JournalEntry {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class JournalEntry implements Parcelable {
     private String date;
     private float stars;
     private String firstPos;
@@ -17,6 +20,26 @@ public class JournalEntry {
         thirdPos = givenThirdPos;
         extraInfo = givenExtra;
     }
+
+    protected JournalEntry(Parcel in) {
+        date = in.readString();
+        stars = in.readFloat();
+        firstPos = in.readString();
+        secondPos = in.readString();
+        thirdPos = in.readString();
+        extraInfo = in.readString();
+    }
+
+    public static final Creator<JournalEntry> CREATOR = new Creator<JournalEntry>() {
+        @Override
+        public JournalEntry createFromParcel(Parcel in) {
+            return new JournalEntry(in);
+        }
+        @Override
+        public JournalEntry[] newArray(int size) {
+            return new JournalEntry[size];
+        }
+    };
 
     public String getDate() {
         return date;
@@ -40,5 +63,20 @@ public class JournalEntry {
 
     public String getExtraInfo() {
         return  extraInfo;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(date);
+        parcel.writeFloat(stars);
+        parcel.writeString(firstPos);
+        parcel.writeString(secondPos);
+        parcel.writeString(thirdPos);
+        parcel.writeString(extraInfo);
     }
 }

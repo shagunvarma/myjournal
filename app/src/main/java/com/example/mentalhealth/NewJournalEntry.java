@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
+import android.widget.TextView;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -24,6 +25,11 @@ public class NewJournalEntry extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_journal_entry);
+        Intent intent = getIntent();
+        JournalEntry entry = intent.getParcelableExtra("JournalEntry");
+        if (entry != null) {
+            preLoadEntry(entry);
+        }
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Button submit = findViewById(R.id.SubmitEntry);
@@ -35,18 +41,48 @@ public class NewJournalEntry extends AppCompatActivity {
         });
     }
 
-    private void createNewJournalEntry() {
+    private void preLoadEntry(JournalEntry entry) {
+        TextView title = findViewById(R.id.ToolBarTitle);
+        title.setText(entry.getDate());
         RatingBar stars = findViewById(R.id.ratingBar);
-        float rating = stars.getRating();
+        stars.setIsIndicator(true);
+        stars.setRating(entry.getStars());
         EditText firstPos = findViewById(R.id.FirstPos);
-        String first = firstPos.getText().toString();
+        firstPos.setEnabled(false);
+        firstPos.setText(entry.getFirstPos());
         EditText secondPos = findViewById(R.id.SecondPos);
-        String second = secondPos.getText().toString();
+        secondPos.setEnabled(false);
+        secondPos.setText(entry.getSecondPos());
         EditText thirdPos = findViewById(R.id.ThirdPos);
-        String third = thirdPos.getText().toString();
+        thirdPos.setEnabled(false);
+        thirdPos.setText(entry.getThirdPos());
         EditText extra = findViewById(R.id.CommentsText);
-        String exttaText = extra.getText().toString();
-        writeToFile(rating, first, second, third, exttaText);
+        extra.setEnabled(false);
+        extra.setText(entry.getExtraInfo());
+        Button submit = findViewById(R.id.SubmitEntry);
+        submit.setText("Close");
+    }
+
+    private void createNewJournalEntry() {
+        Button submit = findViewById(R.id.SubmitEntry);
+        String check = submit.getText().toString();
+        if (check.equals("Close")) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            RatingBar stars = findViewById(R.id.ratingBar);
+            float rating = stars.getRating();
+            EditText firstPos = findViewById(R.id.FirstPos);
+            String first = firstPos.getText().toString();
+            EditText secondPos = findViewById(R.id.SecondPos);
+            String second = secondPos.getText().toString();
+            EditText thirdPos = findViewById(R.id.ThirdPos);
+            String third = thirdPos.getText().toString();
+            EditText extra = findViewById(R.id.CommentsText);
+            String exttaText = extra.getText().toString();
+            writeToFile(rating, first, second, third, exttaText);
+        }
     }
 
     private void writeToFile(final Float stars, final String first, final String second, final String third, final String extra) {

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
             String secondPos = "";
             String thirdPos = "";
             String extraInfo = "";
+            boolean firstLine = true;
             int count = -1;
             while((line=bufferedReader.readLine()) != null) {
                 if (line.equals("StartJournalEntry/")) {
@@ -99,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
                     thirdPos = "";
                     extraInfo = "";
                     count = 0;
+                    firstLine = true;
                 } else if (count == 0) {
                     date = line;
                     count++;
@@ -116,7 +119,12 @@ public class MainActivity extends AppCompatActivity {
                     count++;
                 } else if (line.equals("StartExtraInfo/")) {
                     while ((line=bufferedReader.readLine()) != null && !line.equals("/EndExtraInfo")) {
-                        extraInfo = extraInfo + "\n" + line;
+                        if (firstLine) {
+                            extraInfo = extraInfo + line;
+                            firstLine = false;
+                        } else {
+                            extraInfo = extraInfo + "\n" + line;
+                        }
                     }
                 } else if (line.equals("/EndJournalEntry")) {
                     JournalEntry newJournal = new JournalEntry(date, stars, firstPos, secondPos, thirdPos, extraInfo);
@@ -141,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
             greater = journals.size() - maxDisplay;
         }
         for (int i = journals.size() - 1; i >= greater; i--) {
-            JournalEntry entry = journals.get(i);
+            final JournalEntry entry = journals.get(i);
             View chunk = getLayoutInflater().inflate(R.layout.chunk_mini_journal_entry, parent, false);
             TextView date = chunk.findViewById(R.id.DateField);
             date.setText(entry.getDate());
@@ -153,6 +161,15 @@ public class MainActivity extends AppCompatActivity {
             second.setText(entry.getSecondPos());
             TextView third = chunk.findViewById(R.id.ThirdPos);
             third.setText(entry.getThirdPos());
+            Button view = chunk.findViewById(R.id.ViewButton);
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(MainActivity.this, NewJournalEntry.class);
+                    intent.putExtra("JournalEntry", entry);
+                    startActivity(intent);
+                }
+            });
             parent.addView(chunk);
         }
     }
