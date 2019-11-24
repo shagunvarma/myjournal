@@ -67,8 +67,6 @@ public class NewJournalEntry extends AppCompatActivity {
         Button submit = findViewById(R.id.SubmitEntry);
         String check = submit.getText().toString();
         if (check.equals("Close")) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
             finish();
         } else {
             RatingBar stars = findViewById(R.id.ratingBar);
@@ -106,6 +104,8 @@ public class NewJournalEntry extends AppCompatActivity {
             file.write(end.getBytes());
             file.close();
             Intent intent = new Intent(this, MainActivity.class);
+            JournalEntry entry = new JournalEntry(date, stars, first, second, third, extra);
+            intent.putExtra("JournalEntry", entry);
             startActivity(intent);
             finish();
         } catch(Exception e) {
