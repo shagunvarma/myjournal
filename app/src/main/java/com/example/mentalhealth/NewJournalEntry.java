@@ -106,7 +106,7 @@ public class NewJournalEntry extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             JournalEntry entry = new JournalEntry(date, stars, first, second, third, extra);
             intent.putExtra("JournalEntry", entry);
-            startActivity(intent);
+            setResult(RESULT_OK, intent);
             finish();
         } catch(Exception e) {
 

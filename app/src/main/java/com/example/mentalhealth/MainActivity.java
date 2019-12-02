@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String fileStorageNum = "userJournalStorage";
     private List<JournalEntry> journals = new ArrayList<>();
+    private int newJournalScreen = 22;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        Intent intent = getIntent();
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,13 +45,20 @@ public class MainActivity extends AppCompatActivity {
                 createNewJournalEntry();
             }
         });
-        JournalEntry entry = intent.getParcelableExtra("JournalEntry");
-        if (entry != null) {
-            journals.add(entry);
-        } else {
-            readFileData();
-        }
+        readFileData();
         createCardView();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == newJournalScreen && resultCode == RESULT_OK) {
+            JournalEntry entry = data.getParcelableExtra("JournalEntry");
+            if (entry != null) {
+                journals.add(entry);
+            }
+            createCardView();
+        }
     }
 
     @Override
@@ -78,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void createNewJournalEntry() {
         Intent intent = new Intent(this, NewJournalEntry.class);
-        startActivity(intent);
+        startActivityForResult(intent, newJournalScreen);
     }
 
     //https://www.dev2qa.com/android-read-write-internal-storage-file-example/
