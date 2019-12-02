@@ -1,9 +1,11 @@
 package com.example.mentalhealth;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -37,7 +39,7 @@ public class NewJournalEntry extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createNewJournalEntry();
+                submitButtonPressed();
             }
         });
     }
@@ -64,14 +66,73 @@ public class NewJournalEntry extends AppCompatActivity {
         submit.setText("Close");
         ImageButton edit = findViewById(R.id.editButton);
         edit.setVisibility(View.VISIBLE);
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                enableEditing();
+            }
+        });
         ImageButton delete = findViewById(R.id.deleteButton);
         delete.setVisibility(View.VISIBLE);
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteEntryPressed();
+            }
+        });
     }
 
-    private void createNewJournalEntry() {
+
+    private void enableEditing() {
+        Button submit = findViewById(R.id.SubmitEntry);
+        String check = submit.getText().toString();
+        if (check.equals("Save Changes")) {
+            RatingBar stars = findViewById(R.id.ratingBar);
+            stars.setIsIndicator(true);
+            EditText firstPos = findViewById(R.id.FirstPos);
+            firstPos.setEnabled(false);
+            EditText secondPos = findViewById(R.id.SecondPos);
+            secondPos.setEnabled(false);
+            EditText thirdPos = findViewById(R.id.ThirdPos);
+            thirdPos.setEnabled(false);
+            EditText extra = findViewById(R.id.CommentsText);
+            extra.setEnabled(false);
+            submit.setText("Close");
+        } else {
+            RatingBar stars = findViewById(R.id.ratingBar);
+            stars.setIsIndicator(false);
+            EditText firstPos = findViewById(R.id.FirstPos);
+            firstPos.setEnabled(true);
+            EditText secondPos = findViewById(R.id.SecondPos);
+            secondPos.setEnabled(true);
+            EditText thirdPos = findViewById(R.id.ThirdPos);
+            thirdPos.setEnabled(true);
+            EditText extra = findViewById(R.id.CommentsText);
+            extra.setEnabled(true);
+            submit.setText("Save Changes");
+        }
+    }
+
+    private void deleteEntryPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to delete this entry? This cannot be undone.")
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Delete the entry
+                    }
+                })
+                .setNegativeButton("Cancel", null);
+        builder.create();
+        builder.show();
+    }
+
+    private void submitButtonPressed() {
         Button submit = findViewById(R.id.SubmitEntry);
         String check = submit.getText().toString();
         if (check.equals("Close")) {
+            finish();
+        } else if (check.equals("Save Changes")) {
+            // Need to make it save
             finish();
         } else {
             RatingBar stars = findViewById(R.id.ratingBar);
