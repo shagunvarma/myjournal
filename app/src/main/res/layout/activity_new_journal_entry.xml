@@ -17,19 +17,53 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
+            app:contentInsetStart="0dp"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
-            <TextView
-                android:id="@+id/ToolBarTitle"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="New Journal Entry"
-                android:textAlignment="center"
-                android:textAllCaps="false"
-                android:textColor="@android:color/background_light"
-                android:textSize="30sp" />
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:id="@+id/deleteButton"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="Delete Button"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@android:drawable/ic_menu_delete" />
+
+                <TextView
+                    android:id="@+id/ToolBarTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="New Journal Entry"
+                    android:textAlignment="center"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/background_light"
+                    android:textSize="30sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/deleteButton"
+                    app:layout_constraintStart_toEndOf="@+id/editButton"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/editButton"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="Edit Button"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@android:drawable/ic_menu_edit" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         </androidx.appcompat.widget.Toolbar>
+
 
     </com.google.android.material.appbar.AppBarLayout>
 

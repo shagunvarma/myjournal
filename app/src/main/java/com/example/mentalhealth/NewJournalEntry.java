@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -61,6 +62,10 @@ public class NewJournalEntry extends AppCompatActivity {
         extra.setText(entry.getExtraInfo());
         Button submit = findViewById(R.id.SubmitEntry);
         submit.setText("Close");
+        ImageButton edit = findViewById(R.id.editButton);
+        edit.setVisibility(View.VISIBLE);
+        ImageButton delete = findViewById(R.id.deleteButton);
+        delete.setVisibility(View.VISIBLE);
     }
 
     private void createNewJournalEntry() {
