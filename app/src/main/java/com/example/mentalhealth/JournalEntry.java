@@ -79,4 +79,10 @@ public class JournalEntry implements Parcelable {
         parcel.writeString(thirdPos);
         parcel.writeString(extraInfo);
     }
+
+    public String getWritable() {
+        String sendoff = "\nStartJournalEntry/" + ("\n" + date) + ("\n" + stars) + ("\n" + firstPos) + ("\n" + secondPos);
+        sendoff = sendoff + ("\n" + thirdPos) + "\nStartExtraInfo/" + ("\n" + extraInfo)+ "\n/EndExtraInfo" + "\n/EndJournalEntry";
+        return  sendoff;
+    }
 }

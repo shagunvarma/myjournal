@@ -22,7 +22,8 @@ import java.util.Date;
 
 public class NewJournalEntry extends AppCompatActivity {
 
-    private String fileStorageNum = "userJournalStorage";
+    private String fileStorageName = "userJournalStorage";
+    private int storedIndex = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +32,7 @@ public class NewJournalEntry extends AppCompatActivity {
         Intent intent = getIntent();
         JournalEntry entry = intent.getParcelableExtra("JournalEntry");
         if (entry != null) {
+            storedIndex = intent.getIntExtra("index", -1);
             preLoadEntry(entry);
         }
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -118,7 +120,11 @@ public class NewJournalEntry extends AppCompatActivity {
         builder.setMessage("Are you sure you want to delete this entry? This cannot be undone.")
                 .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // Delete the entry
+                    Intent intent = new Intent(NewJournalEntry.this, MainActivity.class);
+                    intent.putExtra("TypeOfResponse", "delete");
+                    intent.putExtra("index", storedIndex);
+                    setResult(RESULT_OK, intent);
+                    finish();
                     }
                 })
                 .setNegativeButton("Cancel", null);
@@ -129,49 +135,45 @@ public class NewJournalEntry extends AppCompatActivity {
     private void submitButtonPressed() {
         Button submit = findViewById(R.id.SubmitEntry);
         String check = submit.getText().toString();
+        RatingBar stars = findViewById(R.id.ratingBar);
+        float rating = stars.getRating();
+        EditText firstPos = findViewById(R.id.FirstPos);
+        String first = firstPos.getText().toString();
+        EditText secondPos = findViewById(R.id.SecondPos);
+        String second = secondPos.getText().toString();
+        EditText thirdPos = findViewById(R.id.ThirdPos);
+        String third = thirdPos.getText().toString();
+        EditText extra = findViewById(R.id.CommentsText);
+        String extraText = extra.getText().toString();
         if (check.equals("Close")) {
             finish();
         } else if (check.equals("Save Changes")) {
             // Need to make it save
+            TextView top = findViewById(R.id.ToolBarTitle);
+            String date = top.getText().toString();
+            JournalEntry entry = new JournalEntry(date, rating, first, second, third, extraText);
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("JournalEntry", entry);
+            intent.putExtra("TypeOfResponse", "edit");
+            intent.putExtra("index", storedIndex);
+            setResult(RESULT_OK, intent);
             finish();
         } else {
-            RatingBar stars = findViewById(R.id.ratingBar);
-            float rating = stars.getRating();
-            EditText firstPos = findViewById(R.id.FirstPos);
-            String first = firstPos.getText().toString();
-            EditText secondPos = findViewById(R.id.SecondPos);
-            String second = secondPos.getText().toString();
-            EditText thirdPos = findViewById(R.id.ThirdPos);
-            String third = thirdPos.getText().toString();
-            EditText extra = findViewById(R.id.CommentsText);
-            String exttaText = extra.getText().toString();
-            writeToFile(rating, first, second, third, exttaText);
+            writeToFile(rating, first, second, third, extraText);
         }
     }
 
     private void writeToFile(final Float stars, final String first, final String second, final String third, final String extra) {
         try {
-            FileOutputStream file = openFileOutput(fileStorageNum, Context.MODE_APPEND);
-            String start = "StartJournalEntry/";
-            file.write(("\n" + start).getBytes());
+            FileOutputStream file = openFileOutput(fileStorageName, Context.MODE_APPEND);
             SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
             String date = format.format(new Date());
-            file.write(("\n" + date).getBytes());
-            file.write(("\n" + stars.toString()).getBytes());
-            file.write(("\n" + first).getBytes());
-            file.write(("\n" + second).getBytes());
-            file.write(("\n" + third).getBytes());
-            String extraStart = "\nStartExtraInfo/";
-            file.write(extraStart.getBytes());
-            file.write(("\n" + extra).getBytes());
-            String extraEnd = "\n/EndExtraInfo";
-            file.write(extraEnd.getBytes());
-            String end = "\n/EndJournalEntry";
-            file.write(end.getBytes());
+            JournalEntry entry = new JournalEntry(date, stars, first, second, third, extra);
+            file.write(entry.getWritable().getBytes());
             file.close();
             Intent intent = new Intent(this, MainActivity.class);
-            JournalEntry entry = new JournalEntry(date, stars, first, second, third, extra);
             intent.putExtra("JournalEntry", entry);
+            intent.putExtra("TypeOfResponse", "add");
             setResult(RESULT_OK, intent);
             finish();
         } catch(Exception e) {

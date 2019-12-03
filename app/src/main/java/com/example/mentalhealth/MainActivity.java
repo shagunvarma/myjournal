@@ -1,5 +1,6 @@
 package com.example.mentalhealth;
 
+import android.content.Context;
 import android.content.Intent;
 import android.icu.lang.UScript;
 import android.os.Bundle;
@@ -22,13 +23,14 @@ import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String fileStorageNum = "userJournalStorage";
+    private String fileStorageName = "userJournalStorage";
     private List<JournalEntry> journals = new ArrayList<>();
     private int newJournalScreen = 22;
 
@@ -54,11 +56,51 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == newJournalScreen && resultCode == RESULT_OK) {
-            JournalEntry entry = data.getParcelableExtra("JournalEntry");
-            if (entry != null) {
-                journals.add(entry);
+            String type = data.getStringExtra("TypeOfResponse");
+            if (type != null) {
+                if (type.equals("add")) {
+                    JournalEntry entry = data.getParcelableExtra("JournalEntry");
+                    if (entry != null) {
+                        journals.add(entry);
+                    }
+                } else if (type.equals("edit")) {
+                    int index = data.getIntExtra("index", -1);
+                    if (index != -1) {
+                        JournalEntry entry = data.getParcelableExtra("JournalEntry");
+                        if (entry != null) {
+                            journals.set(index, entry);
+                            // re-write file
+                            try {
+                                FileOutputStream file = openFileOutput(fileStorageName, Context.MODE_PRIVATE);
+                                for (int i = 0; i < journals.size(); i++) {
+                                    JournalEntry journal = journals.get(i);
+                                    file.write(journal.getWritable().getBytes());
+                                }
+                                file.close();
+                            } catch(Exception e){
+
+                            }
+
+                        }
+                    }
+                } else if (type.equals("delete")) {
+                    int index = data.getIntExtra("index", -1);
+                    if (index != -1) {
+                        journals.remove(index);
+                        try {
+                            FileOutputStream file = openFileOutput(fileStorageName, Context.MODE_PRIVATE);
+                            for (int i = 0; i < journals.size(); i++) {
+                                JournalEntry journal = journals.get(i);
+                                file.write(journal.getWritable().getBytes());
+                            }
+                            file.close();
+                        } catch(Exception e){
+
+                        }
+                    }
+                }
+                createCardView();
             }
-            createCardView();
         }
     }
 
@@ -93,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
     private void readFileData() {
         journals.clear();
         try {
-            FileInputStream file = openFileInput(fileStorageNum);
+            FileInputStream file = openFileInput(fileStorageName);
             InputStreamReader inputStreamReader = new InputStreamReader(file);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String line = "";
@@ -163,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
         }
         for (int i = journals.size() - 1; i >= greater; i--) {
             final JournalEntry entry = journals.get(i);
+            final int index = i;
             View chunk = getLayoutInflater().inflate(R.layout.chunk_mini_journal_entry, parent, false);
             TextView date = chunk.findViewById(R.id.DateField);
             date.setText(entry.getDate());
@@ -180,7 +223,8 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     Intent intent = new Intent(MainActivity.this, NewJournalEntry.class);
                     intent.putExtra("JournalEntry", entry);
-                    startActivity(intent);
+                    intent.putExtra("index", index);
+                    startActivityForResult(intent, newJournalScreen);
                 }
             });
             parent.addView(chunk);
