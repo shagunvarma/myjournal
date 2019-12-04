@@ -1,8 +1,10 @@
 package com.example.mentalhealth;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.icu.lang.UScript;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
@@ -25,6 +27,7 @@ import org.w3c.dom.Text;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private String fileStorageName = "userJournalStorage";
     private List<JournalEntry> journals = new ArrayList<>();
     private int newJournalScreen = 22;
+    private ProgressDialog DisplayLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
                 createNewJournalEntry();
             }
         });
-        readFileData();
-        createCardView();
+        ReadJournalFile asyncTask = new ReadJournalFile();
+        asyncTask.execute();
     }
 
     //https://stackoverflow.com/questions/12293884/how-can-i-send-back-data-using-finish
@@ -137,66 +141,6 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, newJournalScreen);
     }
 
-    //https://www.dev2qa.com/android-read-write-internal-storage-file-example/
-    private void readFileData() {
-        journals.clear();
-        try {
-            FileInputStream file = openFileInput(fileStorageName);
-            InputStreamReader inputStreamReader = new InputStreamReader(file);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            String line = "";
-            String date = "";
-            float stars = (float) 0.0;
-            String firstPos = "";
-            String secondPos = "";
-            String thirdPos = "";
-            String extraInfo = "";
-            boolean firstLine = true;
-            int count = -1;
-            while((line=bufferedReader.readLine()) != null) {
-                if (line.equals("StartJournalEntry/")) {
-                    date = "";
-                    stars = (float) 0.0;
-                    firstPos = "";
-                    secondPos = "";
-                    thirdPos = "";
-                    extraInfo = "";
-                    count = 0;
-                    firstLine = true;
-                } else if (count == 0) {
-                    date = line;
-                    count++;
-                } else if (count == 1) {
-                    stars = Float.parseFloat(line);
-                    count++;
-                } else if (count == 2) {
-                    firstPos = line;
-                    count++;
-                } else if (count == 3) {
-                    secondPos = line;
-                    count++;
-                } else if (count == 4) {
-                    thirdPos = line;
-                    count++;
-                } else if (line.equals("StartExtraInfo/")) {
-                    while ((line=bufferedReader.readLine()) != null && !line.equals("/EndExtraInfo")) {
-                        if (firstLine) {
-                            extraInfo = extraInfo + line;
-                            firstLine = false;
-                        } else {
-                            extraInfo = extraInfo + "\n" + line;
-                        }
-                    }
-                } else if (line.equals("/EndJournalEntry")) {
-                    JournalEntry newJournal = new JournalEntry(date, stars, firstPos, secondPos, thirdPos, extraInfo);
-                    journals.add(newJournal);
-                    count = -1;
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }
 
     private void createCardView() {
         // Current issues:
@@ -236,4 +180,88 @@ public class MainActivity extends AppCompatActivity {
             parent.addView(chunk);
         }
     }
+
+    //https://www.tutorialspoint.com/android-asynctask-example-and-explanation
+
+    private class ReadJournalFile extends AsyncTask<String, String, List<JournalEntry>> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            DisplayLoading = new ProgressDialog(MainActivity.this);
+            DisplayLoading.setMessage("Please wait while your journal loads.");
+            DisplayLoading.setIndeterminate(false);
+            DisplayLoading.setCancelable(false);
+            DisplayLoading.show();
+        }
+        @Override
+        protected List<JournalEntry> doInBackground(String[] strings) {
+            journals.clear();
+            //https://www.dev2qa.com/android-read-write-internal-storage-file-example/
+            try {
+                FileInputStream file = openFileInput(fileStorageName);
+                InputStreamReader inputStreamReader = new InputStreamReader(file);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String line = "";
+                String date = "";
+                float stars = (float) 0.0;
+                String firstPos = "";
+                String secondPos = "";
+                String thirdPos = "";
+                String extraInfo = "";
+                boolean firstLine = true;
+                int count = -1;
+                while((line=bufferedReader.readLine()) != null) {
+                    if (line.equals("StartJournalEntry/")) {
+                        date = "";
+                        stars = (float) 0.0;
+                        firstPos = "";
+                        secondPos = "";
+                        thirdPos = "";
+                        extraInfo = "";
+                        count = 0;
+                        firstLine = true;
+                    } else if (count == 0) {
+                        date = line;
+                        count++;
+                    } else if (count == 1) {
+                        stars = Float.parseFloat(line);
+                        count++;
+                    } else if (count == 2) {
+                        firstPos = line;
+                        count++;
+                    } else if (count == 3) {
+                        secondPos = line;
+                        count++;
+                    } else if (count == 4) {
+                        thirdPos = line;
+                        count++;
+                    } else if (line.equals("StartExtraInfo/")) {
+                        while ((line=bufferedReader.readLine()) != null && !line.equals("/EndExtraInfo")) {
+                            if (firstLine) {
+                                extraInfo = extraInfo + line;
+                                firstLine = false;
+                            } else {
+                                extraInfo = extraInfo + "\n" + line;
+                            }
+                        }
+                    } else if (line.equals("/EndJournalEntry")) {
+                        JournalEntry newJournal = new JournalEntry(date, stars, firstPos, secondPos, thirdPos, extraInfo);
+                        journals.add(newJournal);
+                        count = -1;
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            return journals;
+        }
+        @Override
+        protected void onPostExecute(List<JournalEntry> readJournals) {
+            super.onPostExecute(readJournals);
+            createCardView();
+            DisplayLoading.hide();
+        }
+    }
+
 }
+
