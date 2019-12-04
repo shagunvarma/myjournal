@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.icu.lang.UScript;
 import android.os.Bundle;
 
+import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,8 +39,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //https://material.io/develop/android/components/bottom-app-bar/
+        //https://www.truiton.com/2017/01/android-bottom-navigation-bar-example/
+        //https://medium.com/@suragch/how-to-add-a-bottom-navigation-bar-in-android-958ed728ef6c
+        //https://medium.com/material-design-in-action/implementing-bottomappbar-menu-and-navigation-c4f069e579ec
+        //https://www.androidhive.info/2017/12/android-working-with-bottom-navigation/
+        BottomAppBar menu = findViewById(R.id.bottomAppBar);
+        setSupportActionBar(menu);
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override

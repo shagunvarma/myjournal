@@ -3,8 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.mentalhealth.MainActivity">
     <item
+        android:id="@+id/JournalButton"
+        android:icon="@drawable/journalicon"
+        android:title="Journal"
+        android:orderInCategory="1"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/CalendarButton"
+        android:icon="@drawable/calendaricon"
+        android:orderInCategory="2"
+        android:title="Calendar"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/PanicButton"
+        android:icon="@drawable/panicicon"
+        android:orderInCategory="3"
+        android:title="Panic"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/action_settings"
-        android:orderInCategory="100"
+        android:icon="@drawable/gearicon"
+        android:orderInCategory="4"
         android:title="@string/action_settings"
-        app:showAsAction="never" />
+        app:showAsAction="always" />
 </menu>
