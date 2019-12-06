@@ -85,4 +85,15 @@ public class JournalEntry implements Parcelable {
         sendoff = sendoff + ("\n" + thirdPos) + "\nStartExtraInfo/" + ("\n" + extraInfo)+ "\n/EndExtraInfo" + "\n/EndJournalEntry";
         return  sendoff;
     }
+
+    public String[] getPdfArray() {
+        String[] sendoff = new String[6];
+        sendoff[0] = date;
+        sendoff[1] = Float.toString(stars);
+        sendoff[2] = firstPos;
+        sendoff[3] = secondPos;
+        sendoff[4] = thirdPos;
+        sendoff[5] = extraInfo;
+        return  sendoff;
+    }
 }

@@ -3,19 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.mentalhealth.MainActivity">
     <item
-        android:id="@+id/JournalButton"
+        android:id="@+id/JournalNavButton"
         android:icon="@drawable/journalicon"
         android:title="Journal"
         android:orderInCategory="1"
         app:showAsAction="always" />
     <item
-        android:id="@+id/CalendarButton"
+        android:id="@+id/CalendarNavButton"
         android:icon="@drawable/calendaricon"
         android:orderInCategory="2"
         android:title="Calendar"
         app:showAsAction="always" />
     <item
-        android:id="@+id/PanicButton"
+        android:id="@+id/PanicNavButton"
         android:icon="@drawable/panicicon"
         android:orderInCategory="3"
         android:title="Panic"
