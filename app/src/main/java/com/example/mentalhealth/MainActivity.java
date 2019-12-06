@@ -411,7 +411,7 @@ public class MainActivity extends AppCompatActivity {
                 //https://stackoverflow.com/questions/34296149/creating-a-pdf-file-in-android-programmatically-and-writing-in-it
                 FileOutputStream fileOut = openFileOutput("My Journal.pdf", Context.MODE_PRIVATE);
                 PdfDocument document = new PdfDocument();
-                for (int i = 0; i < journals.size(); i++) {
+                for (int i = journals.size() - 1; i >= 0; i--) {
                     PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(612, 792, i + 1).create();
                     PdfDocument.Page page = document.startPage(pageInfo);
                     Canvas canvas = page.getCanvas();
