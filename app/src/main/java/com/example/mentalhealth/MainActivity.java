@@ -3,11 +3,10 @@ package com.example.mentalhealth;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.pdf.PdfDocument;
-import android.icu.lang.UScript;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -15,29 +14,27 @@ import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
+import static androidx.core.content.FileProvider.getUriForFile;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -143,54 +140,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void printPdf() {
-        try {
-            FileOutputStream fileOut = openFileOutput("sample.pdf", Context.MODE_PRIVATE);
-            PdfDocument document = new PdfDocument();
-            for (int i = 0; i < journals.size(); i++) {
-                PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(612, 792, i + 1).create();
-                PdfDocument.Page page = document.startPage(pageInfo);
-                Canvas canvas = page.getCanvas();
-                Paint text = new Paint();
-                text.setColor(Color.BLACK);
-                text.setTextSize(20);
-                String[] data = journals.get(i).getPdfArray();
-                Paint title = new Paint();
-                title.setColor(Color.BLACK);
-                title.setTextSize(30);
-                //canvas.drawText(data[0], 30, 30, text);
+        ExportPdf asyncTask = new ExportPdf();
+        asyncTask.execute();
+    }
 
-                int measureWidth = View.MeasureSpec.makeMeasureSpec(page.getCanvas().getWidth(), View.MeasureSpec.EXACTLY);
-                int measuredHeight = View.MeasureSpec.makeMeasureSpec(page.getCanvas().getHeight(), View.MeasureSpec.EXACTLY);
-
-                JournalEntry entry = journals.get(i);
-                View chunk = getLayoutInflater().inflate(R.layout.print_pdf_chunk, null);
-                chunk.measure(measureWidth, measuredHeight);
-                chunk.layout(0, 0, page.getCanvas().getWidth(), page.getCanvas().getHeight());
-                TextView date = chunk.findViewById(R.id.dateField);
-                date.setText(entry.getDate());
-                RatingBar rate = chunk.findViewById(R.id.oldRating);
-                rate.setRating(entry.getStars());
-                TextView first = chunk.findViewById(R.id.FirstPos);
-                first.setText(entry.getFirstPos());
-                TextView second = chunk.findViewById(R.id.SecondPos);
-                second.setText(entry.getSecondPos());
-                TextView third = chunk.findViewById(R.id.ThirdPos);
-                third.setText(entry.getThirdPos());
-
-
-
-                chunk.draw(canvas);
-
-                document.finishPage(page);
-            }
-            // write the document content
-            document.writeTo(fileOut);
-
-            // close the document
-            document.close();
-        }catch (IOException e){
-        }
-
+    private void inflatePdfPrint(JournalEntry entry, int width, int height, int cwidth, int cheight, Canvas given) {
+        View chunk = getLayoutInflater().inflate(R.layout.print_pdf_chunk, null);
+        TextView date = chunk.findViewById(R.id.dateField);
+        date.setText(entry.getDate());
+        RatingBar rate = chunk.findViewById(R.id.oldRating);
+        rate.setRating(entry.getStars());
+        TextView first = chunk.findViewById(R.id.FirstPos);
+        first.setText(entry.getFirstPos());
+        TextView second = chunk.findViewById(R.id.SecondPos);
+        second.setText(entry.getSecondPos());
+        TextView third = chunk.findViewById(R.id.ThirdPos);
+        third.setText(entry.getThirdPos());
+        TextView extra = chunk.findViewById(R.id.extraInfo);
+        extra.setText(entry.getExtraInfo());
+        chunk.measure(width, height);
+        chunk.layout(0, 0, cwidth,cheight);
+        chunk.draw(given);
     }
 
     @Override
@@ -425,5 +395,58 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private class ExportPdf extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            DisplayLoading = new ProgressDialog(MainActivity.this);
+            DisplayLoading.setMessage("Please wait while your journal exports.");
+            DisplayLoading.setIndeterminate(false);
+            DisplayLoading.setCancelable(false);
+            DisplayLoading.show();
+        }
+        @Override
+        protected String doInBackground(String[] strings) {
+            try {
+                //https://stackoverflow.com/questions/34296149/creating-a-pdf-file-in-android-programmatically-and-writing-in-it
+                FileOutputStream fileOut = openFileOutput("My Journal.pdf", Context.MODE_PRIVATE);
+                PdfDocument document = new PdfDocument();
+                for (int i = 0; i < journals.size(); i++) {
+                    PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(612, 792, i + 1).create();
+                    PdfDocument.Page page = document.startPage(pageInfo);
+                    Canvas canvas = page.getCanvas();
+                    //https://stackoverflow.com/questions/43699638/android-create-and-print-pdf-from-layout-view
+                    int measureWidth = View.MeasureSpec.makeMeasureSpec(page.getCanvas().getWidth(), View.MeasureSpec.EXACTLY);
+                    int measuredHeight = View.MeasureSpec.makeMeasureSpec(page.getCanvas().getHeight(), View.MeasureSpec.EXACTLY);
+                    JournalEntry entry = journals.get(i);
+                    inflatePdfPrint(entry, measureWidth, measuredHeight, page.getCanvas().getWidth(), page.getCanvas().getHeight(), canvas);
+                    document.finishPage(page);
+                }
+                document.writeTo(fileOut);
+                document.close();
+                Thread.sleep(1000);
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                //https://stackoverflow.com/questions/31390215/how-do-i-get-the-uri-of-a-file-saved-with-fileoutputstream
+                //https://infinum.com/the-capsized-eight/share-files-using-fileprovider
+                //https://developer.android.com/reference/androidx/core/content/FileProvider
+                //https://stackoverflow.com/questions/51942381/getting-exposed-beyond-app-through-intent-getdata-error-while-installing-the-d
+                //https://stackoverflow.com/questions/17453105/android-open-pdf-file
+                Uri uri = getUriForFile(MainActivity.this, BuildConfig.APPLICATION_ID, getFileStreamPath("My Journal.pdf"));
+                intent.setDataAndType(uri, "application/pdf");
+                PackageManager pm = MainActivity.this.getPackageManager();
+                if (intent.resolveActivity(pm) != null) {
+                    startActivity(intent);
+                }
+            }catch (Exception e){
+            }
+            return "";
+        }
+        @Override
+        protected void onPostExecute(String given) {
+            super.onPostExecute(given);
+            DisplayLoading.hide();
+        }
+    }
 }
 
