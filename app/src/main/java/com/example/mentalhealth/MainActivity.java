@@ -231,6 +231,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, NewJournalEntry.class);
                     intent.putExtra("JournalEntry", entry);
                     intent.putExtra("index", index);
+                    intent.putExtra("From", "MainJournal");
                     startActivityForResult(intent, newJournalScreen);
                 }
             });

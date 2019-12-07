@@ -24,6 +24,7 @@ public class NewJournalEntry extends AppCompatActivity {
 
     private String fileStorageName = "userJournalStorage";
     private int storedIndex = -1;
+    private String from;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +36,7 @@ public class NewJournalEntry extends AppCompatActivity {
             storedIndex = intent.getIntExtra("index", -1);
             preLoadEntry(entry);
         }
+        from = intent.getStringExtra("From");
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Button submit = findViewById(R.id.SubmitEntry);
@@ -120,7 +122,14 @@ public class NewJournalEntry extends AppCompatActivity {
         builder.setMessage("Are you sure you want to delete this entry? This cannot be undone.")
                 .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                    Intent intent = new Intent(NewJournalEntry.this, MainActivity.class);
+                        Intent intent;
+                        if (from.equals("MainJournal")) {
+                            intent = new Intent(NewJournalEntry.this, MainActivity.class);
+                        } else if (from.equals("Calendar")) {
+                            intent = new Intent(NewJournalEntry.this, CalendarActivity.class);
+                        } else {
+                            intent = new Intent(NewJournalEntry.this, MainActivity.class);
+                        }
                     intent.putExtra("TypeOfResponse", "delete");
                     intent.putExtra("index", storedIndex);
                     setResult(RESULT_OK, intent);
@@ -152,7 +161,14 @@ public class NewJournalEntry extends AppCompatActivity {
             TextView top = findViewById(R.id.ToolBarTitle);
             String date = top.getText().toString();
             JournalEntry entry = new JournalEntry(date, rating, first, second, third, extraText);
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent;
+            if (from.equals("MainJournal")) {
+                intent = new Intent(this, MainActivity.class);
+            } else if (from.equals("Calendar")) {
+                intent = new Intent(this, CalendarActivity.class);
+            } else {
+                intent = new Intent(this, MainActivity.class);
+            }
             intent.putExtra("JournalEntry", entry);
             intent.putExtra("TypeOfResponse", "edit");
             intent.putExtra("index", storedIndex);

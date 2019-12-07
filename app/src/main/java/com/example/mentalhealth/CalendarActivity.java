@@ -3,6 +3,7 @@ package com.example.mentalhealth;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import com.google.android.material.bottomappbar.BottomAppBar;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,6 +37,9 @@ public class CalendarActivity extends AppCompatActivity {
     private List<JournalEntry> journals = new ArrayList<>();
     private ProgressDialog DisplayLoading;
     private Map<String, ArrayList<JournalEntry>> DateToJournalList = new HashMap<>();
+    private int newJournalScreen = 22;
+    private  List<View> views = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,16 +101,11 @@ public class CalendarActivity extends AppCompatActivity {
     }
 
     private void createCardView(ArrayList<JournalEntry> given) {
-        int maxDisplay = 10;
         LinearLayout parent = findViewById(R.id.JournalEntriesDisplayCal);
-        parent.removeAllViews();
-        int greater = 0;
-        if ((given.size() - maxDisplay) > 0) {
-            greater = given.size() - maxDisplay;
-        }
-        for (int i = given.size() - 1; i >= greater; i--) {
+        clearViewsNotCal();
+        for (int i = given.size() - 1; i >= 0; i--) {
             final JournalEntry entry = given.get(i);
-            final int index = i;
+            final int index = journals.indexOf(entry);;
             View chunk = getLayoutInflater().inflate(R.layout.chunk_mini_journal_entry, parent, false);
             TextView date = chunk.findViewById(R.id.DateField);
             date.setText(entry.getDate());
@@ -124,10 +124,91 @@ public class CalendarActivity extends AppCompatActivity {
                     Intent intent = new Intent(CalendarActivity.this, NewJournalEntry.class);
                     intent.putExtra("JournalEntry", entry);
                     intent.putExtra("index", index);
-                    //startActivityForResult(intent, newJournalScreen);
+                    intent.putExtra("From", "Calendar");
+                    startActivityForResult(intent, newJournalScreen);
                 }
             });
+            views.add(chunk);
             parent.addView(chunk);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == newJournalScreen && resultCode == RESULT_OK) {
+            String type = data.getStringExtra("TypeOfResponse");
+            if (type != null) {
+                if (type.equals("add")) {
+                    JournalEntry entry = data.getParcelableExtra("JournalEntry");
+                    if (entry != null) {
+                        journals.add(entry);
+                    }
+                } else if (type.equals("edit")) {
+                    int index = data.getIntExtra("index", -1);
+                    if (index != -1) {
+                        JournalEntry entry = data.getParcelableExtra("JournalEntry");
+                        if (entry != null) {
+                            journals.set(index, entry);
+                            // re-write file
+                            try {
+                                FileOutputStream file = openFileOutput(fileStorageName, Context.MODE_PRIVATE);
+                                for (int i = 0; i < journals.size(); i++) {
+                                    JournalEntry journal = journals.get(i);
+                                    file.write(journal.getWritable().getBytes());
+                                }
+                                file.close();
+                            } catch(Exception e){
+
+                            }
+
+                        }
+                    }
+                } else if (type.equals("delete")) {
+                    int index = data.getIntExtra("index", -1);
+                    if (index != -1) {
+                        journals.remove(index);
+                        try {
+                            FileOutputStream file = openFileOutput(fileStorageName, Context.MODE_PRIVATE);
+                            for (int i = 0; i < journals.size(); i++) {
+                                JournalEntry journal = journals.get(i);
+                                file.write(journal.getWritable().getBytes());
+                            }
+                            file.close();
+                        } catch(Exception e){
+
+                        }
+                    }
+                }
+                reloadMap();
+                clearViewsNotCal();
+                createCalendarEvents();
+            }
+        }
+    }
+
+    private void clearViewsNotCal() {
+        LinearLayout parent = findViewById(R.id.JournalEntriesDisplayCal);
+        for (int i = 0; i < views.size(); i++) {
+            parent.removeView(views.get(i));
+        }
+        views.clear();
+    }
+
+    private  void reloadMap() {
+        DateToJournalList.clear();
+        for (int i = 0; i < journals.size(); i++) {
+            JournalEntry newJournal = journals.get(i);
+            String date = newJournal.getDate();
+            if (DateToJournalList.containsKey(date) == false) {
+                ArrayList<JournalEntry> addto = new ArrayList<>();
+                addto.add(newJournal);
+                DateToJournalList.put(date, addto);
+            } else {
+                ArrayList<JournalEntry> addto = DateToJournalList.get(date);
+                addto.add(newJournal);
+                DateToJournalList.put(date, addto);
+            }
         }
     }
 
@@ -152,6 +233,7 @@ public class CalendarActivity extends AppCompatActivity {
         CalendarView calendarView = findViewById(R.id.calendarView);
         calendarView.setEvents(events);
     }
+
 
     //https://www.tutorialspoint.com/android-asynctask-example-and-explanation
     private class ReadJournalFile extends AsyncTask<String, String, List<JournalEntry>> {
