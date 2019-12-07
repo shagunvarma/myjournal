@@ -29,7 +29,6 @@ import android.widget.TextView;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -184,8 +183,14 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.JournalNavButton) {
             System.out.println("Journal");
         }
+        if (id == R.id.CalendarNavButton) {
+            Intent intent = new Intent(this, CalendarActivity.class);
+            startActivity(intent);
+            finish();
+        }
         return super.onOptionsItemSelected(item);
     }
+
 
     private void createNewJournalEntry() {
         Intent intent = new Intent(this, NewJournalEntry.class);
@@ -315,6 +320,7 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(readJournals);
             createCardView();
             DisplayLoading.hide();
+            DisplayLoading.dismiss();
         }
     }
 
@@ -446,6 +452,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String given) {
             super.onPostExecute(given);
             DisplayLoading.hide();
+            DisplayLoading.dismiss();
         }
     }
 }
