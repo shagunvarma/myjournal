@@ -188,6 +188,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+        if (id == R.id.PanicNavButton) {
+            Intent intent = new Intent(this, PanicAttack.class);
+            startActivity(intent);
+            finish();
+        }
         return super.onOptionsItemSelected(item);
     }
 
