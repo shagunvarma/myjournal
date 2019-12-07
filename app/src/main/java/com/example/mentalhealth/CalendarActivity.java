@@ -8,7 +8,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ActionMenuView;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RatingBar;
+import android.widget.TextView;
 
 import com.applandeo.materialcalendarview.CalendarView;
 import com.applandeo.materialcalendarview.EventDay;
@@ -21,7 +25,6 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +91,43 @@ public class CalendarActivity extends AppCompatActivity {
         String date = format.format(given.getTime());
         if (DateToJournalList.containsKey(date) == true) {
             ArrayList<JournalEntry> holding =  DateToJournalList.get(date);
-            System.out.println(holding.size());
+            createCardView(holding);
+        }
+    }
+
+    private void createCardView(ArrayList<JournalEntry> given) {
+        int maxDisplay = 10;
+        LinearLayout parent = findViewById(R.id.JournalEntriesDisplayCal);
+        parent.removeAllViews();
+        int greater = 0;
+        if ((given.size() - maxDisplay) > 0) {
+            greater = given.size() - maxDisplay;
+        }
+        for (int i = given.size() - 1; i >= greater; i--) {
+            final JournalEntry entry = given.get(i);
+            final int index = i;
+            View chunk = getLayoutInflater().inflate(R.layout.chunk_mini_journal_entry, parent, false);
+            TextView date = chunk.findViewById(R.id.DateField);
+            date.setText(entry.getDate());
+            RatingBar rate = chunk.findViewById(R.id.OldRating);
+            rate.setRating(entry.getStars());
+            TextView first = chunk.findViewById(R.id.FirstPos);
+            first.setText(entry.getFirstPos());
+            TextView second = chunk.findViewById(R.id.SecondPos);
+            second.setText(entry.getSecondPos());
+            TextView third = chunk.findViewById(R.id.ThirdPos);
+            third.setText(entry.getThirdPos());
+            Button view = chunk.findViewById(R.id.ViewButton);
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(CalendarActivity.this, NewJournalEntry.class);
+                    intent.putExtra("JournalEntry", entry);
+                    intent.putExtra("index", index);
+                    //startActivityForResult(intent, newJournalScreen);
+                }
+            });
+            parent.addView(chunk);
         }
     }
 

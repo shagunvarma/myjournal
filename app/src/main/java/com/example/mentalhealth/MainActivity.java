@@ -199,9 +199,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void createCardView() {
-        // Current issues:
-            //No spacing between chunks
-            //Add edit/view buttons to entries
+
         int maxDisplay = 10;
         LinearLayout parent = findViewById(R.id.JournalEntriesDisplay);
         parent.removeAllViews();
