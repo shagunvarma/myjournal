@@ -9,7 +9,7 @@
     <string name="Three">3.</string>
     <string name="numberTextView">TextView</string>
     <string name="counterButton">Button</string>
-    <string name="click_me_every_time_you_breathe">click me every time you breathe</string>
+    <string name="click_me_every_time_you_breathe">Breathe</string>
     <string name="_0">0</string>
-    <string name="one_helpful_method_for_stopping_a_panic_attack_is_deep_breathing_however_in_the_moment_this_can_be_very_hard_and_it_can_be_difficult_to_keep_track_of_the_amount_of_times_you_breathe_when_you_feel_a_panic_attack_coming_use_this_counter_to_keep_track_of_your_breaths_and_look_at_geoff_s_face_to_help_you_relax">One helpful method for stopping a panic attack is deep breathing. However, in the moment, this can be very hard and it can be difficult to keep track of the amount of times you breathe. When you feel a panic attack coming, use this counter to keep track of your breaths and look at Geoff\'s face to help you relax.</string>
+    <string name="one_helpful_method_for_stopping_a_panic_attack_is_deep_breathing_however_in_the_moment_this_can_be_very_hard_and_it_can_be_difficult_to_keep_track_of_the_amount_of_times_you_breathe_when_you_feel_a_panic_attack_coming_use_this_counter_to_keep_track_of_your_breaths_and_look_at_geoff_s_face_to_help_you_relax">When you feel a panic attack coming, use this counter to keep track of how many times you breathe.</string>
 </resources>

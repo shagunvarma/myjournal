@@ -13,7 +13,10 @@ import android.os.Bundle;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.biometric.BiometricPrompt;
+import androidx.core.content.ContextCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.View;
@@ -24,6 +27,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import java.io.BufferedReader;
@@ -77,7 +81,12 @@ public class MainActivity extends AppCompatActivity {
                 printPdf();
             }
         });
-        readJournalFileIntoArray();
+        boolean requireFing = getIntent().getBooleanExtra("NeedFinger", true);
+        if (requireFing) {
+            createFingerprintDio();
+        } else {
+            readJournalFileIntoArray();
+        }
     }
 
     //https://stackoverflow.com/questions/12293884/how-can-i-send-back-data-using-finish
@@ -133,6 +142,44 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //https://developer.android.com/training/sign-in/biometric-auth
+    private void createFingerprintDio() {
+        BiometricPrompt.PromptInfo prompt = new BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Unlock")
+                .setSubtitle("Unlock your journal")
+                .setDescription("Use your biometrics to unlock your journal.")
+                .setNegativeButtonText("Cancel")
+                .build();
+        BiometricPrompt biometricPrompt = new BiometricPrompt(MainActivity.this,
+                ContextCompat.getMainExecutor(this), new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationError(int errorCode,
+                                              @NonNull CharSequence errString) {
+                super.onAuthenticationError(errorCode, errString);
+                if (!errString.equals("Cancel")) {
+                    Toast.makeText(getApplicationContext(),
+                            "Authentication error: " + errString, Toast.LENGTH_SHORT)
+                            .show();
+                }
+                finish();
+            }
+
+            @Override
+            public void onAuthenticationSucceeded(
+                    @NonNull BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+                    readJournalFileIntoArray();
+            }
+
+            @Override
+            public void onAuthenticationFailed() {
+                super.onAuthenticationFailed();
+                finish();
+            }
+        });
+        biometricPrompt.authenticate(prompt);
+    }
+
     private void readJournalFileIntoArray() {
         ReadJournalFile asyncTask = new ReadJournalFile();
         asyncTask.execute();
@@ -181,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         if (id == R.id.JournalNavButton) {
-            System.out.println("Journal");
+            readJournalFileIntoArray();
         }
         if (id == R.id.CalendarNavButton) {
             Intent intent = new Intent(this, CalendarActivity.class);

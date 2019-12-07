@@ -1,5 +1,6 @@
 package com.example.mentalhealth;
 import android.content.Intent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -8,6 +9,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.google.android.material.bottomappbar.BottomAppBar;
 
 public class PanicAttack extends AppCompatActivity {
     private int mCounter = 0;
@@ -19,7 +22,8 @@ public class PanicAttack extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_panic_attack);
-
+        BottomAppBar menu = findViewById(R.id.bottomAppBar);
+        setSupportActionBar(menu);
         counterButton = findViewById(R.id.counter);
         counterNum = findViewById(R.id.number);
         descriptionText = findViewById(R.id.description);
@@ -33,6 +37,15 @@ public class PanicAttack extends AppCompatActivity {
         });
 
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -44,15 +57,13 @@ public class PanicAttack extends AppCompatActivity {
             return true;
         }
         if (id == R.id.JournalNavButton) {
-            System.out.println("Journal");
-        }
-        if (id == R.id.CalendarNavButton) {
-            Intent intent = new Intent(this, CalendarActivity.class);
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("NeedFinger", false);
             startActivity(intent);
             finish();
         }
-        if (id == R.id.PanicNavButton) {
-            Intent intent = new Intent(this, PanicAttack.class);
+        if (id == R.id.CalendarNavButton) {
+            Intent intent = new Intent(this, CalendarActivity.class);
             startActivity(intent);
             finish();
         }

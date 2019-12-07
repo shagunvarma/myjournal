@@ -87,8 +87,17 @@ public class CalendarActivity extends AppCompatActivity {
         }
         if (id == R.id.JournalNavButton) {
             Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("NeedFinger", false);
             startActivity(intent);
             finish();
+        }
+        if (id == R.id.PanicNavButton) {
+            Intent intent = new Intent(this, PanicAttack.class);
+            startActivity(intent);
+            finish();
+        }
+        if (id == R.id.CalendarNavButton) {
+            readJournalFileIntoArray();
         }
         return super.onOptionsItemSelected(item);
     }
