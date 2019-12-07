@@ -48,6 +48,9 @@ public class CalendarActivity extends AppCompatActivity {
         BottomAppBar menu = findViewById(R.id.bottomAppBar);
         setSupportActionBar(menu);
         Calendar calendar = Calendar.getInstance();
+        //https://github.com/Applandeo/Material-Calendar-View
+        //http://applandeo.com/blog/material-calendar-view-customized-calendar-widget-android/
+        //https://medium.com/@Patel_Prashant_/android-custom-calendar-with-events-fa48dfca8257
         CalendarView editCalendar = findViewById(R.id.calendarView);
         try {
             editCalendar.setDate(calendar);
