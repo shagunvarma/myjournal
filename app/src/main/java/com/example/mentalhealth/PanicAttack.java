@@ -54,7 +54,9 @@ public class PanicAttack extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(this, Settings.class);
+            startActivity(intent);
+            finish();
         }
         if (id == R.id.JournalNavButton) {
             Intent intent = new Intent(this, MainActivity.class);

@@ -3,6 +3,7 @@ package com.example.mentalhealth;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.pdf.PdfDocument;
@@ -81,8 +82,10 @@ public class MainActivity extends AppCompatActivity {
                 printPdf();
             }
         });
+        SharedPreferences settings = getSharedPreferences("UserSettings", 0);
+        boolean fingSetting = settings.getBoolean("Fingerprint", false);
         boolean requireFing = getIntent().getBooleanExtra("NeedFinger", true);
-        if (requireFing) {
+        if (requireFing && fingSetting) {
             createFingerprintDio();
         } else {
             readJournalFileIntoArray();
@@ -225,7 +228,9 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(this, Settings.class);
+            startActivity(intent);
+            finish();
         }
         if (id == R.id.JournalNavButton) {
             readJournalFileIntoArray();
