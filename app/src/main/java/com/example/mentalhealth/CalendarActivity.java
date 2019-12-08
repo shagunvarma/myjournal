@@ -108,6 +108,7 @@ public class CalendarActivity extends AppCompatActivity {
         SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
         format.setTimeZone(given.getTimeZone());
         String date = format.format(given.getTime());
+        clearViewsNotCal();
         if (DateToJournalList.containsKey(date) == true) {
             ArrayList<JournalEntry> holding =  DateToJournalList.get(date);
             createCardView(holding);
