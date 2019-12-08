@@ -196,7 +196,7 @@ public class CalendarActivity extends AppCompatActivity {
                 }
                 reloadMap();
                 clearViewsNotCal();
-                createCalendarEvents();
+                createCalendarEvents(false);
             }
         }
     }
@@ -231,7 +231,7 @@ public class CalendarActivity extends AppCompatActivity {
         asyncTask.execute();
     }
 
-    private void createCalendarEvents() {
+    private void createCalendarEvents(boolean hide) {
         SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
         List<EventDay> events = new ArrayList<>();
         for (int i = 0; i < journals.size(); i++) {
@@ -246,6 +246,10 @@ public class CalendarActivity extends AppCompatActivity {
         }
         CalendarView calendarView = findViewById(R.id.calendarView);
         calendarView.setEvents(events);
+        if (hide) {
+            DisplayLoading.hide();
+            DisplayLoading.dismiss();
+        }
     }
 
 
@@ -337,7 +341,7 @@ public class CalendarActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<JournalEntry> readJournals) {
             super.onPostExecute(readJournals);
-            createCalendarEvents();
+            createCalendarEvents(true);
             DisplayLoading.hide();
             DisplayLoading.dismiss();
         }
