@@ -195,6 +195,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void inflatePdfPrint(JournalEntry entry, int width, int height, int cwidth, int cheight, Canvas given) {
         View chunk = getLayoutInflater().inflate(R.layout.print_pdf_chunk, null);
+        chunk.measure(width, height);
+        chunk.layout(0, 0, cwidth,cheight);
         TextView date = chunk.findViewById(R.id.dateField);
         date.setText(entry.getDate());
         RatingBar rate = chunk.findViewById(R.id.oldRating);
@@ -207,8 +209,6 @@ public class MainActivity extends AppCompatActivity {
         third.setText(entry.getThirdPos());
         TextView extra = chunk.findViewById(R.id.extraInfo);
         extra.setText(entry.getExtraInfo());
-        chunk.measure(width, height);
-        chunk.layout(0, 0, cwidth,cheight);
         chunk.draw(given);
     }
 

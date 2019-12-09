@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/MainCard"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
+    android:layout_height="wrap_content"
     app:cardCornerRadius="20dp"
     app:cardElevation="5dp"
     app:cardMaxElevation="20dp">
@@ -12,7 +12,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/Holder"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/DateField"
@@ -43,7 +43,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout4"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/OldRating">
 
@@ -142,8 +142,8 @@
 
             <View
                 android:id="@+id/view"
-                android:layout_height="1dp"
                 android:layout_width="0dp"
+                android:layout_height="1dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="10dp"
@@ -155,7 +155,7 @@
             <Button
                 android:id="@+id/ViewButton"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_height="20dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 android:background="@android:color/transparent"
